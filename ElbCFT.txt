@@ -1,0 +1,45 @@
+{
+	"Description": "Elb Creation",
+	"Parameters": {
+		"KeyName": {
+			"Description": "AWS Key to use",
+			"Type": "String",
+			"Default": "12nov"
+		},
+		"LoadBalancerName": {
+			"Description": "The name of load balancer",
+			"Type": "String",
+			"Default": "NagiosWeb"
+		},
+		"Subnets": {
+			"Description": "Private subnets",
+			"Type": "String",
+			"Default": "subnet-1f259b68"
+		}
+	},
+	"Resources": {
+		"ElasticLoadBalancingConfiguration": {
+			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+			"Properties":{
+				"LoadBalancerName": { "Fn::Join" : ["-", ["Nagios", {"Ref" : "LoadBalancerName"} ] ]},
+				"Instances": [ "i-0d05204ad0f4bc2cd" ],
+				"Listeners":[ {
+					"InstancePort": "80",
+					"InstanceProtocol": "http",
+					"LoadBalancerPort":"80",
+					"Protocol": "http"
+				} ],
+				"Scheme": "internet-facing",
+				"SecurityGroups": [ "sg-c68484bb" ],
+				"HealthCheck":{ 
+					"HealthyThreshold": "2",
+					"Interval": "5",
+					"Target": "HTTP:80/",
+					"Timeout": "3",
+					"UnhealthyThreshold": "2"
+				},
+				"Subnets": [ { "Ref": "Subnets"} ]
+			}
+		}
+	}
+}
